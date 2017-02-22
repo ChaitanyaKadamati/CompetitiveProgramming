@@ -1,0 +1,72 @@
+/*
+GCPD helicopters are flying through the streets of Gotham. The helicopters are part of a convoy which is guarding Harvey Dent. The Joker is lining up traps for the
+GCPD helicopters while they fly through the streets of Gotham. He has hired goons to shoot transparent ropes from one the building on one side of the street to the
+opposite building on the other side of the street. The goons go to different floors of the building and shoot ropes which stick to the building on the other side of the
+street. They goons may shoot to any floor of the other building. His plan is to bring down the helicopters using these ropes and bring down terror to the streets of
+Gotham.
+There's one small loophole in the plan though. The ropes being transparent are not visible to the helicopter pilot but, if there's an intersection of two ropes then lesser
+light passes through the intersection of two ropes and the intersection is visible to the pilot! The pilot can notice this and form a strategy to avoid disaster but their
+stratergy would depend on counting the number of intersections. Can you help the polits count the number of intersections?
+Inputs:
+You can assume that no more than two ropes intersect at a single point. You are given N (0 ≤ N ≤ 1000), the number of ropes and for each N you have a pair of
+numbers x and y (0 ≤ x , y ≤ 10000) given which indicate the floors at which the rope starts and ends respectively.
+Assume the pilot sees the intersection in 2D plane. For example, the pilot sees one intersection in the following case:
+1	
+2
+1 1
+2 2
+0
+
+2	
+2
+4 10
+6 2
+1
+
+
+3	
+3
+7 7
+1 10
+5 5
+2
+*/
+#include <stdio.h>
+
+#define MAX_F 10000
+
+/* Remove Additional printf/scanf statements before submissions */
+int NumberOfIntersections(int a[], int b[], int n)
+{
+    int i, j;
+    int result = 0;
+    for(i=0;i<n-1;i++)
+    {
+        for(j = i+1;j<n;j++)
+        {
+            if(a[i]==a[j] || b[i]==b[j])
+            continue;
+            if(a[i]>a[j] && b[i]<b[j])
+                result++;
+            else if(a[i]<a[j] && b[i]>b[j])
+                result++;
+        }
+    }
+    return result;
+}
+
+int main(void)
+{
+    int i, n;
+    int a[MAX_F], b[MAX_F];
+
+    scanf("%d", &n);
+    for(i = 0; i < n; i++)
+    {
+        scanf("%d%d", &a[i], &b[i]);
+    }
+
+    printf("%d\n", NumberOfIntersections(a, b, n));
+
+    return 0;
+}
