@@ -1,0 +1,154 @@
+NI
+Honour Code
+Questions 
+Logout
+Burn the King's landing
+
+Aerys II, The Mad King, at the time of Robert's Rebellion had the Alchemists' Guild create massive amount of wildfire which was later stocked underground at n different spots in the King's Landing. With this knowledge, Cersei Lannister plans to take revenge on High Sparrow and blow up all of King's Landing. Each ith stock requires c[i] candles to light them. Because of limited number of candles available, the Alchemists' decided to connect few stocks through fuse wires so that when one of them is lighted, all the connected stocks also blow up. There are s fuse wires available to connect the stocks.
+
+Given the number of candles required to burn each stock and the list of connected stocks, find the minimum number of candles required to set off Wildfire and blow up King's Landing.
+
+Input
+Number of wildfire stocks: n (0 < n < 1000).
+Number of candles c[i] required to burn the ith stock for each of the n stocks.
+Number of fuses s (0 < s < n).
+Pairs of stocks connected by s fuses.
+
+Output
+The minimum number of candles required to burn the King's Landing
+
+Example:
+Input
+5
+5 5 2 6 3 
+2
+4 2
+5 4
+
+Output
+10
+
+Explanation
+There are 5 wildfire stocks.
+There are 2 fuses.
+2 is connected to 4 and 5 is connected to 4.
+Hence 2, 4, 5 are connected.
+Minimum number of candles required to blow up this connection is 3.
+Thus the minimum number of candles required to blow all of King's Landing is 2+5+3 i.e. 10
+
+
+Example Inputs and Outputs
+Testcase	Input	Output	Download Link	Run Link(Also saves the code)
+1	
+5
+5 5 2 6 3 
+2
+4 2
+5 4
+10
+Download Input File	Run against code
+2	
+7
+0 5 8 1 6 0 9 
+3
+3 7
+3 4
+6 5
+6
+Download Input File	Run against code
+3	
+6
+1 5 0 5 3 7 
+4
+2 4
+1 2
+4 3
+3 2
+
+10
+Download Input File	Run against code
+4	
+10
+2 7 1 1 5 9 9 7 2 4 
+7
+1 7
+7 4
+10 3
+2 8
+7 4
+8 3
+3 2
+
+18
+Download Input File	Run against code
+5	
+12
+3 3 3 3 3 3 3 3 3 3 3 3  
+5
+6 1
+9 12
+2 7
+8 2
+5 10
+
+21
+
+long long int FindMinimumNumberOfCandles(int num_wildfire, int num_strings, int arr_num_candles[], int arr_stringConnection[][2])
+{
+    long long int result = 0;
+    int i;
+    int tempLowest = 2147483646;
+    
+    for (i = 0; i < num_strings; i++)
+    {
+        
+    }
+    for (i = 0; i < num_strings; i++)
+    {
+        if(arr_num_candles[arr_stringConnection[i][0] - 1] <  arr_num_candles[arr_stringConnection[i][1] - 1])
+        {
+             arr_num_candles[arr_stringConnection[i][1] - 1] = arr_num_candles[arr_stringConnection[i][0] - 1];
+            arr_num_candles[arr_stringConnection[i][0] - 1]= 0;
+        }
+        else if(arr_num_candles[arr_stringConnection[i][0] - 1] >  arr_num_candles[arr_stringConnection[i][1] - 1])
+        {
+            arr_num_candles[arr_stringConnection[i][0] - 1] = arr_num_candles[arr_stringConnection[i][1] - 1];
+            arr_num_candles[arr_stringConnection[i][1] - 1] = 0;
+        }
+        else if(arr_num_candles[arr_stringConnection[i][0] - 1] ==  arr_num_candles[arr_stringConnection[i][1] - 1])
+        {
+            arr_num_candles[arr_stringConnection[i][1] - 1] = 0;
+        }
+    }
+    for(i = 0; i < num_wildfire; i++)
+    {
+       result+= arr_num_candles[i];
+    }
+    return result;
+}
+
+/* Do not modify the main() function */
+int main(void)
+{
+   int num_wildfire, num_strings, i;
+   if(scanf("%d", &num_wildfire) == 1)
+   {
+       int arr_num_candles[num_wildfire];
+       for (i = 0; i < num_wildfire; i++)
+       {
+           if(scanf("%d", &arr_num_candles[i])==1)
+            continue;
+       }
+       if(scanf("%d", &num_strings)== 1)
+       {
+           int arr_stringConnection[num_strings][2];
+           for (i = 0; i < num_strings; i++)
+           {
+               if(scanf("%d %d", &arr_stringConnection[i][0], &arr_stringConnection[i][1]) == 1)
+                continue;
+           }
+           printf("%lld\n", FindMinimumNumberOfCandles(num_wildfire, num_strings, arr_num_candles, arr_stringConnection));
+       }
+   }
+   return 0;
+}
