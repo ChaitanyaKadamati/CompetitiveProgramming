@@ -1,0 +1,167 @@
+/*Problem Statement
+Consider a matrix with  rows and  columns, where each cell contains either a  or a  and any cell containing a  is called a filled cell. Two cells are said to be connected if they are adjacent to each other horizontally, vertically, or diagonally; in other words, cell  is connected to cells , , , , , , , and , provided that the location exists in the matrix for that .
+
+If one or more filled cells are also connected, they form a region. Note that each cell in a region is connected to at least one other cell in the region but is not necessarily directly connected to all the other cells in the region.
+
+Task 
+Given an  matrix, find and print the number of cells in the largest region in the matrix. Note that there may be more than one region in the matrix.
+
+Input Format
+
+The first line contains an integer, , denoting the number of rows in the matrix. 
+The second line contains an integer, , denoting the number of columns in the matrix. 
+Each line  of the  subsequent lines contains  space-separated integers describing the respective values filling each row in the matrix.
+
+Constraints
+
+Output Format
+
+Print the number of cells in the largest region in the given matrix.
+
+Sample Input
+
+4
+4
+1 1 0 0
+0 1 1 0
+0 0 1 0
+1 0 0 0
+Sample Output
+
+5
+Explanation
+
+The diagram below depicts two regions of the matrix; for each region, the component cells forming the region are marked with an X:
+
+X X 0 0     1 1 0 0
+0 X X 0     0 1 1 0
+0 0 X 0     0 0 1 0
+1 0 0 0     X 0 0 0
+The first region has five cells and the second region has one cell. Because we want to print the number of cells in the largest region of the matrix, we print .
+
+*/
+
+using System;
+using System.Diagnostics;
+namespace Connected_Cell_in_a_Grid
+{
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            ProcessConnectedCellInGrid();
+        }
+
+        public static void ProcessConnectedCellInGrid()
+        {
+            int rows = Convert.ToInt32(Console.ReadLine());
+            int cols = Convert.ToInt32(Console.ReadLine());
+
+            int[,] matrix = new int[rows, cols];
+
+            for (int i = 0; i < rows; i++)
+            {
+                string[] data = Console.ReadLine().Split(' ');
+
+                for (int j = 0; j < cols; j++)
+                    matrix[i, j] = Convert.ToInt32(data[j]);
+            }
+
+            Console.WriteLine(GetNumberOfCellsInLargestRegion(matrix, rows, cols));
+        }
+
+        static void RunSampleTestcase()
+        {
+            int rows = 4;
+            int cols = 4;
+
+            string[] matrix = new string[] { "1 1 0 0", "0 1 1 0", "0 0 1 0", "1 0 0 0" };
+
+            int[,] arr = new int[rows, cols];
+
+            for (int i = 0; i < rows; i++)
+            {
+                string[] colA = matrix[i].Split(' ');
+
+                for (int j = 0; j < cols; j++)
+                    arr[i, j] = Convert.ToInt32(colA[j]);
+            }
+
+            Debug.Assert(GetNumberOfCellsInLargestRegion(arr, rows, cols) == 5);
+        }
+
+        public static int GetNumberOfCellsInLargestRegion(int[,] matrix, int rows, int cols)
+        {
+            int max = Int32.MinValue;
+
+            for (int row = 0; row < rows; row++)
+                for (int col = 0; col < cols; col++)
+                {
+                    if (matrix[row, col] == 1)
+                    {
+                        int value = TraverseRegionAndCount(matrix, rows, cols, row, col);
+                        max = value > max ? value : max;
+                    }
+                }
+
+            return max;
+        }
+
+        private static int TraverseRegionAndCount(
+            int[,] matrix,
+            int rows,
+            int cols,
+            int startX,
+            int startY)
+        {
+            Queue<int> queue = new Queue<int>();
+            queue.Enqueue(GetKeyNumber(startX, startY));
+            matrix[startX, startY] = 0;
+
+            IList<string> DebugInfo = new List<string>();
+
+            int count = 0;
+            while (queue.Count > 0)
+            {
+                int key = (int)queue.Dequeue();
+
+                int visitingCellRow = key / 10;
+                int visitingCellCol = key % 10;
+
+                for (int row = -1; row <= 1; row++)
+                {
+                    for (int col = -1; col <= 1; col++)
+                    {
+                        int neighborRow = row + visitingCellRow;
+                        int neighborCol = col + visitingCellCol;
+
+                        if (BoundaryCheck(neighborRow, neighborCol, rows, cols) &&
+                            matrix[neighborRow, neighborCol] == 1)
+                        {
+                            matrix[neighborRow, neighborCol] = 0;
+                            queue.Enqueue(GetKeyNumber(neighborRow, neighborCol));
+                        }
+                    }
+                }
+
+                DebugInfo.Add(visitingCellRow + "-" + visitingCellCol);
+                count++;
+            }
+
+            return count;
+        }
+
+        private static bool BoundaryCheck(int row, int col, int rows, int cols)
+        {
+            if ((row >= 0 && row < rows) && (col >= 0 && col < cols))
+                return true;
+            else
+                return false;
+        }
+
+        private static int GetKeyNumber(int row, int col)
+        {
+            return 10 * row + col;
+        }
+    }
+}
