@@ -1,0 +1,46 @@
+using System;
+
+namespace Delegate
+{
+    class Program
+    {
+        delegate double CalculateAreaPointer(double radius);
+        static Action<double> DisplayAction = x => { Console.WriteLine(x); };
+
+        static void Main(string[] args)
+        {
+            double radius = 2.65;
+            CalculateAreaPointer _CalculateArea = CalcuateArea;
+            DisplayAction(_CalculateArea(radius));
+            _CalculateArea = delegate(double param)
+                    {
+                        double area = Math.PI * param * param;
+                        return area;
+                    }
+                ;
+            DisplayAction(_CalculateArea(radius));
+
+            _CalculateArea = r => Math.PI * r * r;
+            Func<double, double> _CalculateAreaFunc = r =>
+            {
+                double area = Math.PI * r * r;
+                return area;
+            };
+            Action<double> _CalculateAreadAction = r =>
+            {
+                double area = Math.PI * r * r;
+                DisplayAction(area);
+            };
+
+            DisplayAction(_CalculateArea(radius));
+            DisplayAction(_CalculateAreaFunc(radius));
+            _CalculateAreadAction(radius);
+
+        }
+
+        public static double CalcuateArea(double radius)
+        {
+            return Math.PI * radius * radius;
+        }
+    }
+}
