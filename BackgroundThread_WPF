@@ -1,0 +1,172 @@
+/* XAML
+<Window x:Class="WpfApplication1.BackgroundWorkerThread"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="MainWindow" Height="350" Width="525">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition />
+            <RowDefinition Height="auto"/>
+        </Grid.RowDefinitions>
+        <Button Content="Heavy Work Thread" Click="Button_Click_1"  />
+        <Button Grid.Row="1" Content="Add Numbers to List" Click="Button_Click_2"/>
+        <ListBox Grid.Row="2" ItemsSource="{Binding Items}" />
+        <ProgressBar Grid.Row="3" Maximum="100" Minimum="0" Value="{Binding ProgressValue}" Height="50" />
+    </Grid>
+</Window>
+
+*/
+
+using System;
+using System.Collections.ObjectModel;
+using System.ComponentModel;
+using System.Threading;
+using System.Windows;
+
+namespace WpfApplication1
+{
+    /// <summary>
+    /// Interaction logic for MainWindow.xaml
+    /// </summary>
+    public partial class BackgroundWorkerThread : Window, INotifyPropertyChanged
+    {
+        BackgroundWorker _BackgroundWorker;
+        public BackgroundWorkerThread()
+        {
+            InitializeComponent();
+            this.Items = new ObservableCollection<string>();
+            this.Loaded += MainWindow_Loaded;
+        }
+
+        void MainWindow_Loaded(object sender, RoutedEventArgs e)
+        {
+            this.DataContext = this;
+        }
+
+        public ObservableCollection<string> Items { get; set; }
+        private float _ProgressValue;
+        public float ProgressValue
+        {
+            get { return this._ProgressValue; }
+            set
+            {
+                _ProgressValue = value;
+                this.PropertyChanged(this, new PropertyChangedEventArgs("ProgressValue"));
+            }
+        }
+
+        private void Button_Click_1(object sender, RoutedEventArgs e)
+        {
+            Thread _Thread = new Thread(Run);
+            SynchronizationContext _SynchronizationContext = SynchronizationContext.Current;
+            _Thread.Start(_SynchronizationContext);
+        }
+
+        private void Run(Object objext)
+        {
+            SynchronizationContext _SynchronizationContext = objext as SynchronizationContext;
+            for (int i = 0; i < 1000; i++)
+            {
+                int result = i;
+                for (int j = 0; j < 1000; j++)
+                {
+                    result += j;
+                }
+                _SynchronizationContext.Post(UpdateUI, result);
+                Thread.Sleep(10);
+            }
+        }
+
+        private void UpdateUI(object state)
+        {
+            Items.Add(state.ToString());
+        }
+
+        private void Button_Click_2(object sender, RoutedEventArgs e)
+        {
+            if (_BackgroundWorker == null)
+            {
+                _BackgroundWorker = new BackgroundWorker()
+                {
+                    WorkerSupportsCancellation = true,
+                    WorkerReportsProgress = true
+                };
+                _BackgroundWorker.RunWorkerCompleted += _BackgroundWorker_RunWorkerCompleted;
+                _BackgroundWorker.DoWork += _BackgroundWorker_DoWork;
+                _BackgroundWorker.ProgressChanged += _BackgroundWorker_ProgressChanged;
+            }
+            if (_BackgroundWorker.IsBusy)
+            {
+                _BackgroundWorker.CancelAsync();
+                startRequested = true;
+            }
+            else
+            {
+                startRequested = false;
+                _BackgroundWorker.RunWorkerAsync();
+            }
+        }
+
+        bool startRequested = false;
+
+        void _BackgroundWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        {
+            if(startRequested)
+                startRequested = false;
+            _BackgroundWorker.RunWorkerAsync();
+        }
+
+        private bool forwardflag = true;
+        void _BackgroundWorker_ProgressChanged(object sender, ProgressChangedEventArgs e)
+        {
+            Items.Add(e.UserState.ToString());
+            if (forwardflag)
+            {
+                this.ProgressValue++;
+                if (this.ProgressValue == 100)
+                    forwardflag = false;
+            }
+            else
+            {
+                this.ProgressValue--;
+                if (this.ProgressValue == 0)
+                    forwardflag = true;
+            }
+        }
+
+        void _BackgroundWorker_DoWork(object sender, DoWorkEventArgs e)
+        {
+            BackgroundWorker _BackgroundWorker = sender as BackgroundWorker;
+
+            for (int i = 0; i < 1000; i++)
+            {
+                if (_BackgroundWorker.CancellationPending)
+                {
+                    e.Cancel = true;
+                    return;
+                }
+                int result = i;
+                for (int j = 0; j < 1000; j++)
+                {
+                    if (_BackgroundWorker.CancellationPending)
+                    {
+                        e.Cancel = true;
+                        return;
+                    }
+                    result += j;
+                }
+                if (_BackgroundWorker.CancellationPending)
+                {
+                    e.Cancel = true;
+                    return;
+                }
+                _BackgroundWorker.ReportProgress(0, result);
+                Thread.Sleep(10);
+            }
+        }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+    }
+}
