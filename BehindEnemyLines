@@ -1,0 +1,82 @@
+
+namespace BehindEnemyLines
+{
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            int result = appearanceCount(4, 11, "cAda", "AbrAcadAbRa");
+        }
+        static int appearanceCount(int input1, int input2, string input3, string input4)
+        {
+            int result = 0;
+            int[,] charactercount = GetCharacterCountArray(ref input3,0,input1);
+            SortArray(charactercount);
+            for (int i = 0; i < input2-input1+1; i++)
+            {
+                int[,] charactercount2 = GetCharacterCountArray(ref input4, i, input1); 
+                SortArray(charactercount2);
+                bool matchFound = true;
+                for (int j = 0; j < input1; j++)
+                {
+                    if (charactercount[j, 0] == charactercount2[j, 0] && charactercount[j, 1] == charactercount2[j, 1])
+                        continue;
+                    else
+                    {
+                        matchFound = false;
+                        break;
+                    }
+                }
+                if (matchFound == true)
+                    result++;
+            }
+            return result;
+        }
+
+        private static int[,] GetCharacterCountArray(ref string input3, int startIndex, int length)
+        {
+            int[,] charactercount = new int[length, 2];
+            for (int i = startIndex; i < startIndex+length; i++)
+            {
+                int index = GetCharIndexOf(charactercount, input3[i]);
+                if (input3[i] != charactercount[index, 0])
+                {
+                    charactercount[index, 0] = input3[i];
+                }
+                charactercount[index, 1]++;
+            }
+            return charactercount;
+        }
+
+        private static void SortArray(int[,] arr)
+        {
+            int temp = 0;
+            for (int write = 0; write < arr.Length/2; write++)
+            {
+                for (int sort = 0; sort < arr.Length/2 - 1; sort++)
+                {
+                    if (arr[sort, 0] > arr[sort + 1, 0])
+                    {
+                        temp = arr[sort + 1, 0];
+                        arr[sort + 1, 0] = arr[sort, 0];
+                        arr[sort, 0] = temp;
+                    }
+                }
+            }
+        }
+
+        private static int GetCharIndexOf(int[,] charactercount, char p)
+        {
+            int index = 0;
+            while (charactercount[index, 0] != 0)
+            {
+                if (charactercount[index, 0] == p)
+                {
+                    break;
+                }
+                index++;
+            }
+            return index;
+        }
+    }
+}
