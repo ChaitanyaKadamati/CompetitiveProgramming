@@ -1,0 +1,35 @@
+using System;
+
+namespace Jail_Break_In_Bhopal
+{
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            int x = 5;
+            int y = 1;
+            int [] z =new int[] {9,10};
+            Console.WriteLine(GetJumpCount(x,y,z));
+        }
+
+        static int GetJumpCount(int input1, int input2, int[] input3)
+        {
+            int jumpCount = 0;
+            for (int i = 0; i < input3.Length; i++)
+            {
+                int currentAltitude = 0;
+                int wallHeight = input3[i];
+                while (true)
+                {
+                    currentAltitude += input1;
+                    jumpCount++;
+                    if (currentAltitude >= wallHeight)
+                        break;
+                    else
+                        currentAltitude -= input2;
+                }
+            }
+            return jumpCount;
+        }
+    }
+}
