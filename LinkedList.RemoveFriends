@@ -1,0 +1,279 @@
+/*
+ After getting her PhD, Christie has become a celebrity at her university, and her facebook profile is full of friend requests. Being the nice girl she is, Christie has accepted all the requests.
+
+Now Kuldeep is jealous of all the attention she is getting from other guys, so he asks her to delete some of the guys from her friend list.
+
+To avoid a 'scene', Christie decides to remove some friends from her friend list, since she knows the popularity of each of the friend she has, she uses the following algorithm to delete a friend.
+
+Algorithm Delete(Friend):
+    DeleteFriend=false
+    for i = 1 to Friend.length-1
+         if (Friend[i].popularity < Friend[i+1].popularity)
+            delete i th friend
+            DeleteFriend=true
+            break
+    if(DeleteFriend == false)
+        delete the last friend
+
+Input: 
+First line contains T number of test cases. First line of each test case contains N, the number of friends Christie currently has and K ,the number of friends Christie decides to delete. Next lines contains popularity of her friends separated by space.
+
+Output: 
+For each test case print N-K numbers which represent popularity of Christie friend's after deleting K friends.
+
+Constraints
+1<=T<=1000
+1<=N<=100000
+0<=K< N 
+0<=popularity_of_friend<=100
+
+NOTE:
+Order of friends after deleting exactly K friends should be maintained as given in input.
+
+SAMPLE INPUT 
+3
+3 1
+3 100 1
+5 2
+19 12 3 4 17
+5 3
+23 45 11 77 18
+SAMPLE OUTPUT 
+100 1 
+19 12 17 
+77 18 
+ 
+ */
+
+using System;
+
+namespace Remove_Friends
+{
+
+    public class Node
+    {
+        public int Data;
+        public Node Next;
+
+        public Node() { }
+
+        public Node(int _Data)
+        {
+            this.Data = _Data;
+        }
+    }
+
+    public class LinkedList
+    {
+        public Node Head;
+
+        public void Add(int _Data)
+        {
+            if (this.Head == null)
+            {
+                this.Head = new Node(_Data);
+            }
+            else
+            {
+                Node temp = Head;
+                while (temp.Next != null)
+                {
+                    temp = temp.Next;
+                }
+                temp.Next = new Node { Data = _Data };
+            }
+        }
+
+        public void Delete(int _Data)
+        {
+            Node temp = Head;
+            if (Head.Data == _Data)
+            {
+                Head = Head.Next;
+            }
+            else
+            {
+                while (temp.Next.Data != _Data)
+                {
+                    temp = temp.Next;
+                }
+                temp.Next = temp.Next.Next;
+            }
+        }
+
+        public void DeleteAt(int _Position)
+        {
+            Node temp = Head;
+            if (_Position == 0)
+            {
+                Head = Head.Next;
+            }
+            else
+            {
+                while (_Position > 1)
+                {
+                    temp = temp.Next;
+                    _Position--;
+                }
+                temp.Next = temp.Next.Next;
+            }
+        }
+
+        public void Insert(int _Data, int _Position)
+        {
+            if (_Position == 0)
+            {
+                Node temp = new Node(_Data);
+                if (Head != null)
+                    temp.Next = Head;
+                Head = temp;
+            }
+            else
+            {
+                Node temp = Head;
+                while (_Position > 0)
+                {
+                    temp = temp.Next;
+                    _Position--;
+                }
+                Node newNode = new Node(_Data);
+                newNode.Next = temp.Next;
+                temp.Next = newNode;
+            }
+        }
+
+        public int GetData(int _Position)
+        {
+            Node temp = Head;
+            while (_Position > 0)
+            {
+                temp = temp.Next;
+                _Position--;
+            }
+            return temp.Data;
+        }
+
+        public Node Search(int _Data)
+        {
+            Node result = null;
+            Node temp = Head;
+            while (temp.Data == _Data || temp != null)
+            {
+                temp = temp.Next;
+            }
+            if (temp != null)
+                result = temp;
+            return result;
+        }
+
+        public void Print()
+        {
+            Node temp = Head;
+            while (temp != null)
+            {
+                Console.Write(temp.Data + " ");
+                temp = temp.Next;
+            }
+        }
+    }
+
+    public class Fun_LinkedList
+    {
+        public void DeleteLast(Node _Node)
+        {
+            if (_Node == null)
+                return;
+            if (_Node.Next == null)
+                _Node = null;
+            Node temp = _Node;
+            while (temp.Next.Next != null)
+            {
+                temp = temp.Next;
+            }
+            temp.Next = null;
+        }
+    }
+
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            int t = int.Parse(Console.ReadLine());
+            string[] input;
+            while (t > 0)
+            {
+                string inputText = "";
+                while (inputText.Trim() == "")
+                {
+                    inputText = Console.ReadLine();
+                }
+                input = inputText.Split(' ');
+                int n = int.Parse(input[0]);
+                int k = int.Parse(input[1]);
+                LinkedList Friend = new LinkedList();
+                while (n > 0)
+                {
+                    int popularity_of_friend = GetInt();
+                    Friend.Add(popularity_of_friend);
+                    n--;
+                }
+                Delete(Friend, k);
+                Friend.Print();
+                Console.WriteLine();
+                t--;
+            }
+        }
+
+        private static void Delete(LinkedList Friend, int k)
+        {
+            while (k > 0)
+            {
+                DeleteFriend(Friend);
+                k--;
+            }
+        }
+
+        private static void DeleteFriend(LinkedList Friend)
+        {
+            bool FriendDeleted = false;
+            Fun_LinkedList _Fun_LinkedList = new Fun_LinkedList();
+            if (Friend.Head == null)
+                return;
+            if (Friend.Head.Next == null)
+            {
+                Friend.Head = null;
+            }
+            Node temp = Friend.Head;
+            int position = 0;
+            while (temp.Next != null)
+            {
+                if (temp.Data < temp.Next.Data)
+                {
+                    Friend.DeleteAt(position);
+                    FriendDeleted = true;
+                    break;
+                }
+                temp = temp.Next;
+                position++;
+            }
+            if (FriendDeleted == false)
+            {
+                _Fun_LinkedList.DeleteLast(Friend.Head);
+            }
+        }
+
+        static int GetInt()
+        {
+            int integer = 0;
+            int n = Console.Read();
+            while (n == ' ' || n == '\n' || n == '\r' || n == '\t' || n == -1)
+                n = Console.Read();
+            while (n >= '0' && n <= '9')
+            {
+                integer = integer * 10 + n - '0';
+                n = Console.Read();
+            }
+            return integer;
+        }
+    }
+}
