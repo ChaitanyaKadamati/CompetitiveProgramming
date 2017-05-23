@@ -1,0 +1,164 @@
+using System;
+
+namespace LinkList
+{
+    public class Node
+    {
+        public int Data;
+        public Node Next;
+
+        public Node() { }
+
+        public Node(int _Data)
+        {
+            this.Data = _Data;
+        }
+    }
+
+    public class LinkedList
+    {
+        public Node Head;
+
+        public void Add(int _Data)
+        {
+            if (this.Head == null)
+            {
+                this.Head = new Node(_Data);
+            }
+            else
+            {
+                Node temp = Head;
+                while (temp.Next != null)
+                {
+                    temp = temp.Next;
+                }
+                temp.Next = new Node { Data = _Data };
+            }
+        }
+
+        public void Delete(int _Data)
+        {
+            Node temp = Head;
+            if (Head.Data == _Data)
+            {
+                Head = Head.Next;
+            }
+            else
+            {
+                while (temp.Next.Data != _Data)
+                {
+                    temp = temp.Next;
+                }
+                temp.Next = temp.Next.Next;
+            }
+        }
+
+        public void Insert(int _Data, int _Position)
+        {
+            if (_Position == 0)
+            {
+                Node temp = new Node(_Data);
+                if (Head != null)
+                    temp.Next = Head;
+                Head = temp;
+            }
+            else
+            {
+                Node temp = Head;
+                while (_Position > 0)
+                {
+                    temp = temp.Next;
+                    _Position--;
+                }
+                Node newNode = new Node(_Data);
+                newNode.Next = temp.Next;
+                temp.Next = newNode;
+            }
+        }
+
+        public int GetData(int _Position)
+        {
+            Node temp = Head;
+            while (_Position > 0)
+            {
+                temp = temp.Next;
+                _Position--;
+            }
+            return temp.Data;
+        }
+
+        public Node Search(int _Data)
+        {
+            Node result = null;
+            Node temp = Head;
+            while (temp.Data == _Data || temp != null)
+            {
+                temp = temp.Next;
+            }
+            if (temp != null)
+                result = temp;
+            return result;
+        }
+
+        public void Print()
+        {
+            Node temp = Head;
+            while (temp != null)
+            {
+                Console.Write(temp.Data + "->");
+                temp = temp.Next;
+            }
+        }
+    }
+
+    public class Puzzles_LinkedList
+    {
+        public void PrintReverse(Node _Node)
+        {
+            if (_Node.Next == null)
+                return;
+            PrintReverse(_Node.Next);
+            Console.Write(_Node.Data + "->");
+        }
+
+        public void MoveLastNodeToFirst(LinkedList _LinkedList)
+        {
+            if (_LinkedList.Head == null || _LinkedList.Head.Next == null)
+                return;
+            Node LastMinus1Node = _LinkedList.Head;
+            while (LastMinus1Node.Next.Next != null)
+            {
+                LastMinus1Node = LastMinus1Node.Next;
+            }
+            Node temp = LastMinus1Node.Next;
+            LastMinus1Node.Next = null;
+            temp.Next = _LinkedList.Head;
+            _LinkedList.Head = temp;
+        }
+    }
+
+    public class Test_LinkedList
+    {
+        public static void Main(String[] args)
+        {
+            LinkedList LinkedList = new LinkedList();
+            for (int i = 0; i < 100; i++)
+            {
+                LinkedList.Add(i);
+            }
+
+            for (int i = 0; i < 100; i++)
+            {
+                LinkedList.Delete(i);
+            }
+            for (int i = 0; i < 100; i++)
+            {
+                LinkedList.Insert(i, 0);
+            }
+            Puzzles_LinkedList _Puzzles_LinkedList = new Puzzles_LinkedList();
+            _Puzzles_LinkedList.PrintReverse(LinkedList.Head);
+            _Puzzles_LinkedList.MoveLastNodeToFirst(LinkedList);
+            LinkedList.Print();
+        }
+    }
+}
