@@ -1,0 +1,95 @@
+/***
+The Joker's trap
+
+GCPD helicopters are flying through the streets of Gotham. The helicopters are 
+ * part of a convoy which is guarding Harvey Dent. The Joker is lining up traps 
+ * for the GCPD helicopters while they fly through the streets of Gotham. He has
+ * hired goons to shoot transparent ropes from one the building on one side of 
+ * the street to the opposite building on the other side of the street. The goons
+ * go to different floors of the building and shoot ropes which stick to the building
+ * on the other side of the street. They goons may shoot to any floor of the other 
+ * building. His plan is to bring down the helicopters using these ropes and bring 
+ * down terror to the streets of Gotham.
+There's one small loophole in the plan though. The ropes being transparent are not 
+ * visible to the helicopter pilot but, if there's an intersection of two ropes then 
+ * lesser light passes through the intersection of two ropes and the intersection is 
+ * visible to the pilot! The pilot can notice this and form a strategy to avoid disaster
+ * but their stratergy would depend on counting the number of intersections. Can you 
+ * help the polits count the number of intersections?
+ * 
+Inputs:
+You can assume that no more than two ropes intersect at a single point. You are given N (0 ≤ N ≤ 1000), the number of ropes and for each N you have a pair of numbers xi and yi (0 ≤ xi, yi ≤ 10000) given which indicate the floors at which the rope starts and ends respectively.
+Assume the pilot sees the intersection in 2D plane. For example, the pilot sees one intersection in the following case:
+ 
+Output:
+The number of intersection seen by the pilot.
+
+TestCase 1 :
+ * Input : 2        Output : 0
+ *         1 1
+ *         2 2
+
+TestCase 2 :
+ * Input : 2        Output : 1
+ *         4 10
+ *         6 2
+ *         
+
+TestCase 3 :
+ * Input : 3        Output : 2
+ *         7 7
+ *         1 10
+ *         5 5
+ */
+using System;
+
+namespace Jokers_Trap
+{
+    class Program
+    {
+        public static void Main()
+        {
+            // Do not change or remove the below Console input.
+            string str_Ropes = Console.ReadLine();
+            int num_Ropes = Int32.Parse(str_Ropes);
+
+            char[] sep = { };
+            string[] inputs;
+
+            string str_line;
+            int[,] ropeConnections = new int[num_Ropes, 2];
+
+            for (int i = 0; i < num_Ropes; i++)
+            {
+                //Do not change or remove the below Console input.
+                str_line = Console.ReadLine();
+                inputs = str_line.Split(sep);
+
+                for (int j = 0; j < 2; j++)
+                {
+                    ropeConnections[i, j] = Int32.Parse(inputs[j]);
+                }
+            }
+
+            int numIntersection = FindIntersections(num_Ropes, ropeConnections);
+
+            // Do not change or remove the below Console output.
+            Console.WriteLine(numIntersection.ToString());
+
+        }
+
+        public static int FindIntersections(int num_Ropes, int[,] ropeConnections)
+        {
+            int numIntersection = 0;
+            for (int i = 0; i <= num_Ropes - 2; i++)
+                for (int j = i + 1; j <= num_Ropes - 1; j++)
+                    if (ropeConnections[i, 0] < ropeConnections[j, 0] && ropeConnections[i, 1] < ropeConnections[j, 1])
+                        continue;
+                    else if (ropeConnections[i, 0] > ropeConnections[j, 0] && ropeConnections[i, 1] > ropeConnections[j, 1])
+                        continue;
+                    else
+                        numIntersection++;
+            return numIntersection;
+        }
+    }
+}
